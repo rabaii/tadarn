@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Store Management</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5DJgB-_fWiZ3OIPprYEEwxpK2310y6Ts",
+      authDomain: "bbbb-f8e57.firebaseapp.com",
+      databaseURL: "https://bbbb-f8e57-default-rtdb.firebaseio.com",
+      projectId: "bbbb-f8e57",
+      storageBucket: "bbbb-f8e57.firebasestorage.app",
+      messagingSenderId: "458909231519",
+      appId: "1:458909231519:web:d11936dccf374cac3775aa"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Function to display all items
+    function displayItems() {
+      const itemsRef = ref(db, 'items');
+      get(itemsRef).then((snapshot) => {
+        const itemsContainer = document.getElementById('items');
+        itemsContainer.innerHTML = '';  // Clear the container before rendering
+        if (snapshot.exists()) {
+          const items = snapshot.val();
+          for (let key in items) {
+            const item = items[key];
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('item');
+            itemElement.innerHTML = `
+              <strong>${item.name}</strong> - $${item.price}
+              <button onclick="deleteItem('${key}')">Delete</button>
+              <button onclick="editItem('${key}', '${item.name}', ${item.price})">Edit</button>
+            `;
+            itemsContainer.appendChild(itemElement);
+          }
+        } else {
+          itemsContainer.innerHTML = 'No items found.';
+        }
+      });
+    }
+
+    // Function to add a new item
+    window.addItem = function() {
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+      if (name && price) {
+        const newItemRef = ref(db, 'items/' + Date.now());
+        set(newItemRef, {
+          name: name,
+          price: price
+        }).then(() => {
+          alert('Item added!');
+          displayItems();
+          document.getElementById('name').value = '';
+          document.getElementById('price').value = '';
+        }).catch((error) => {
+          alert('Error adding item: ' + error);
+        });
+      } else {
+        alert('Please provide item name and price.');
+      }
+    };
+
+    // Function to delete an item
+    window.deleteItem = function(id) {
+      const itemRef = ref(db, 'items/' + id);
+      remove(itemRef).then(() => {
+        alert('Item deleted!');
+        displayItems();
+      }).catch((error) => {
+        alert('Error deleting item: ' + error);
+      });
+    };
+
+    // Function to edit an item
+    window.editItem = function(id, name, price) {
+      document.getElementById('name').value = name;
+      document.getElementById('price').value = price;
+      document.getElementById('addButton').style.display = 'none';
+      const updateButton = document.getElementById('updateButton');
+      updateButton.style.display = 'block';
+      updateButton.onclick = () => updateItem(id);
+    };
+
+    // Function to update an item
+    window.updateItem = function(id) {
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+      const itemRef = ref(db, 'items/' + id);
+      update(itemRef, {
+        name: name,
+        price: price
+      }).then(() => {
+        alert('Item updated!');
+        displayItems();
+        document.getElementById('name').value = '';
+        document.getElementById('price').value = '';
+        document.getElementById('addButton').style.display = 'block';
+        document.getElementById('updateButton').style.display = 'none';
+      }).catch((error) => {
+        alert('Error updating item: ' + error);
+      });
+    };
+
+    // Initialize the app
+    window.onload = displayItems;
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Store Management System</h1>
+    <div class="form-container">
+      <input type="text" id="name" placeholder="Item name" required>
+      <input type="number" id="price" placeholder="Item price" required>
+      <button id="addButton" onclick="addItem()">Add Item</button>
+      <button id="updateButton" style="display: none;" onclick="updateItem()">Update Item</button>
+    </div>
+
+    <h2>Items List</h2>
+    <div id="items">
+      <!-- Items will be displayed here -->
+    </div>
+  </div>
+</body>
+</html>
