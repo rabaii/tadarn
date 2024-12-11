@@ -39,8 +39,8 @@
             itemElement.classList.add('item');
             itemElement.innerHTML = `
               <strong>${item.name}</strong> - $${item.price}
-              <button onclick="deleteItem('${key}')">Delete</button>
-              <button onclick="editItem('${key}', '${item.name}', ${item.price})">Edit</button>
+              <button onclick="deleteItem('${key}')">حذف</button>
+              <button onclick="editItem('${key}', '${item.name}', ${item.price})">تعديل</button>
             `;
             itemsContainer.appendChild(itemElement);
           }
@@ -119,12 +119,14 @@
 </head>
 <body>
   <div class="container">
-    <h1>Store Management System</h1>
+    <h1>سجن بابل المركزي</h1>
+    <h2>وحدة التدرن</h2>
+    <h3>اشراف د.اسامة علي</h3>
     <div class="form-container">
       <input type="text" id="name" placeholder="Item name" required>
       <input type="number" id="price" placeholder="Item price" required>
-      <button id="addButton" onclick="addItem()">Add Item</button>
-      <button id="updateButton" style="display: none;" onclick="updateItem()">Update Item</button>
+      <button id="addButton" onclick="addItem()">اضافة</button>
+      <button id="updateButton" style="display: none;" onclick="updateItem()">تحديث</button>
     </div>
 
     <h2>Items List</h2>
